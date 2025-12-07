@@ -1,0 +1,24 @@
+{
+    "name": "desafio-sensores",
+    "version": "1.0.0",
+    "description": "Desafio dos Sensores Urbanos - Sistemas Distribuídos",
+    "main": "gateway.js",
+    "scripts": {
+        "sensores": "npx ts-node sensor.ts Centro",
+        "gateway": "npx ts-node gateway.ts",
+        "cloud": "npx ts-node cloud.ts",
+        "processador": "npx ts-node processador.ts"
+    },
+    "author": "Seu Nome",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^24.5.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.2"
+    },
+    "dependencies": {
+        "@grpc/grpc-js": "^1.14.0",
+        "@grpc/proto-loader": "^0.8.0",
+        "kafkajs": "^2.2.4"
+    }
+}

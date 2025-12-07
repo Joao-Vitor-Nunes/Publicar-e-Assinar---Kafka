@@ -1,0 +1,19 @@
+
+01. subir o kafka(atenção no ip)
+
+docker compose up 
+
+02. "apagar" o kafka(atenção no ip)
+
+docker compose down 
+
+03. comandos:
+
+npm run gateway
+npx ts-node processador.ts
+npx ts-node cloud.ts
+npx ts-node sensor.ts Bairro01 5000
+npx ts-node sensor.ts Bairro02 5001
+npx ts-node sensor.ts Bairro03 5002
+npx ts-node sensor.ts Bairro04 5003
+npx ts-node sensor.ts Bairro05 5004
