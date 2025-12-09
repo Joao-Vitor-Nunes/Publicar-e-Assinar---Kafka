@@ -1,7 +1,10 @@
+import * as grpc from "@grpc/grpc-js";
+import * as protoLoader from "@grpc/proto-loader";
 import { createLogger } from "../common/utils/logger";
+import { ConfigProcessor } from "./processorConfig";
+import { adicionarMedia, obterMedias } from "./processorStore";
 import { criarClienteCloud } from "./cloudClient";
 import { AmostraClimatica } from "../common/types/leituras";
-//import { producerMedia } from "../kafka";
 
 const logger = createLogger("PROCESSOR");
 
@@ -13,10 +16,7 @@ export type Medias = {
 };
 
 function toNumeroSeguro(valor: unknown): number | null {
-  if (typeof valor !== "string" && typeof valor !== "number") {
-    return null;
-  }
-
+  if (typeof valor !== "string" && typeof valor !== "number") return null;
   const str = String(valor).replace(",", ".");
   const n = Number(str);
   return Number.isFinite(n) ? n : null;
@@ -31,12 +31,7 @@ export function calcularMedias(dados: AmostraClimatica[]): Medias[] {
     const i = toNumeroSeguro(d.indiceInsolacao);
 
     if (!d.bairro || t === null || u === null || i === null) {
-      logger.error("Leitura inválida ignorada no cálculo de médias", {
-        d,
-        t,
-        u,
-        i,
-      });
+      logger.error("Leitura inválida ignorada no cálculo de médias", { d });
       return;
     }
 
@@ -58,27 +53,71 @@ export function calcularMedias(dados: AmostraClimatica[]): Medias[] {
       insolacao: g.i.reduce((a, b) => a + b, 0) / g.i.length,
     });
   }
+
   return resultado;
 }
 
-/*async function mediasKafka (medias: Medias[]): Promise<void> {
-  try {
-    await producerMedia.connect();
+export function iniciarServidorProcessor(config: ConfigProcessor): void {
+  const packageDef = protoLoader.loadSync(config.caminhoProto);
+  const proto = grpc.loadPackageDefinition(packageDef) as any;
+  const calculoProto = proto.sensor_processor;
 
-  await producerMedia.send({
-    topic: "medias-climaticas",
-    messages: [{ value: JSON.stringify(medias) }],
+  const server = new grpc.Server();
+
+  server.addService(calculoProto.CalculoService.service, {
+    CalculaMedias: (
+      call: grpc.ServerUnaryCall<{ dados: AmostraClimatica[] }, { medias: Medias[] }>,
+      callback: grpc.sendUnaryData<{ medias: Medias[] }>,
+    ) => {
+      const entrada = call.request.dados ?? [];
+      const medias = calcularMedias(entrada);
+
+      logger.info("CalculaMedias chamado", {
+        totalEntradas: entrada.length,
+        totalBairros: medias.length,
+      });
+
+      callback(null, { medias });
+    },
+
+    ListarMedias: (
+      call: grpc.ServerUnaryCall<unknown, { medias: Medias[] }>,
+      callback: grpc.sendUnaryData<{ medias: Medias[] }>,
+    ) => {
+      const medias = obterMedias();
+
+      logger.info("ListarMedias chamado pela Cloud", {
+        totalMedias: medias.length,
+      });
+
+      callback(null, { medias });
+    },
   });
 
-  logger.info("Médias climáticas enviadas para o Kafka", { medias });
-  } catch (erro) {
-    logger.error("Falha ao enviar médias climáticas para o Kafka")
-  }
-} */
+  server.bindAsync(
+    config.enderecoGrpc,
+    grpc.ServerCredentials.createInsecure(),
+    (err, port) => {
+      if (err) {
+        logger.error("Falha ao iniciar servidor gRPC do processador", {
+          erro: err.message,
+        });
+        return;
+      }
+
+      logger.info("Servidor gRPC do processador iniciado", {
+        endpoint: config.enderecoGrpc,
+        port,
+      });
+
+      server.start();
+    },
+  );
+}
 
 export function iniciarAgendadorLeiturasCloud(
   endpointCloud: string,
-  intervaloMs: number
+  intervaloMs: number,
 ): void {
   const clientCloud = criarClienteCloud(endpointCloud);
 
@@ -93,9 +132,6 @@ export function iniciarAgendadorLeiturasCloud(
       }
 
       const dados = (res.dados ?? []) as AmostraClimatica[];
-      logger.info("Exemplo de dado recebido da Cloud", {
-        exemplo: dados[0],
-      });
       if (!dados.length) {
         logger.info("Nenhuma leitura disponível na Cloud para calcular.");
         return;
@@ -108,7 +144,8 @@ export function iniciarAgendadorLeiturasCloud(
         totalBairros: medias.length,
         medias,
       });
-      //mediasKafka(medias);
+
+      adicionarMedia(medias);
     });
   }, intervaloMs);
 }

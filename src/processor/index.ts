@@ -1,8 +1,14 @@
+import { carregarConfigProcessor } from "./processorConfig";
+import { iniciarServidorProcessor } from "./processorService";
 import { iniciarAgendadorLeiturasCloud } from "./processorService";
 
 function main() {
-  const endpointCloud = "0.0.0.0:7100";
-  iniciarAgendadorLeiturasCloud(endpointCloud, 10000);
+  const config = carregarConfigProcessor();
+
+  iniciarServidorProcessor(config);
+
+  iniciarAgendadorLeiturasCloud("127.0.0.1:7100", 10000);
 }
 
 main();
+
