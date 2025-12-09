@@ -61,11 +61,7 @@ export async function iniciarCloud(
         return;
       }
 
-      logger.info("Cloud recebeu leitura do Kafka", {
-        topic,
-        partition,
-        dado,
-      });
+      logger.info("Cloud recebeu os dados do kafka");
 
       adicionarLeituraCloud(dado);
     },
