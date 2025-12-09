@@ -1,6 +1,7 @@
 import { createLogger } from "../common/utils/logger";
 import { criarClienteCloud } from "./cloudClient";
 import { AmostraClimatica } from "../common/types/leituras";
+//import { producerMedia } from "../kafka";
 
 const logger = createLogger("PROCESSOR");
 
@@ -57,9 +58,23 @@ export function calcularMedias(dados: AmostraClimatica[]): Medias[] {
       insolacao: g.i.reduce((a, b) => a + b, 0) / g.i.length,
     });
   }
-
   return resultado;
 }
+
+/*async function mediasKafka (medias: Medias[]): Promise<void> {
+  try {
+    await producerMedia.connect();
+
+  await producerMedia.send({
+    topic: "medias-climaticas",
+    messages: [{ value: JSON.stringify(medias) }],
+  });
+
+  logger.info("Médias climáticas enviadas para o Kafka", { medias });
+  } catch (erro) {
+    logger.error("Falha ao enviar médias climáticas para o Kafka")
+  }
+} */
 
 export function iniciarAgendadorLeiturasCloud(
   endpointCloud: string,
@@ -93,6 +108,7 @@ export function iniciarAgendadorLeiturasCloud(
         totalBairros: medias.length,
         medias,
       });
+      //mediasKafka(medias);
     });
   }, intervaloMs);
 }

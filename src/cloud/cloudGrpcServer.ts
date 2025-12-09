@@ -23,7 +23,7 @@ export function iniciarServidorCloudGrpc(): void {
     ) => {
       const dados = obterLeiturasCloud();
 
-      logger.info("ListarLeituras chamado pelo processor", {
+      logger.info("Listar Leituras chamado pelo processor", {
         totalLeituras: dados.length,
       });
 

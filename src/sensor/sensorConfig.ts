@@ -1,17 +1,17 @@
 export type ConfigSensor = {
   hostEscuta: string;
   portaEscuta: number;
-  regiaoMonitorada: string;
+  bairroMonitorado: string;
   intervaloEnvioMs: number;
 };
 
 export function carregarConfigSensor(): ConfigSensor {
-  const regiaoMonitorada = process.argv[2];
+  const bairroMonitorado = process.argv[2];
   const portaArg = Number(process.argv[3]);
 
-  if (!regiaoMonitorada || Number.isNaN(portaArg)) {
+  if (!bairroMonitorado || Number.isNaN(portaArg)) {
     console.error(
-      "[NODE_SENSOR] Uso correto: npm start <REGIAO_MONITORADA> <PORTA>",
+      "[NODE_SENSOR] Uso correto: npm start <Bairro_Momitorado> <PORTA>",
     );
     process.exit(1);
   }
@@ -19,7 +19,7 @@ export function carregarConfigSensor(): ConfigSensor {
   return {
     hostEscuta: "0.0.0.0",
     portaEscuta: portaArg,
-    regiaoMonitorada,
+    bairroMonitorado,
     intervaloEnvioMs: 3000,
   };
 }

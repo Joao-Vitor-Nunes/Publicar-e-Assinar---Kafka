@@ -8,7 +8,7 @@ import {
 
 const kafkaConfig: KafkaConfig = {
   logLevel: logLevel.NOTHING,
-  brokers: ["localhost:9092"]
+  brokers: ["localhost:9092"],
 };
 
 const kafka = new Kafka(kafkaConfig);
@@ -17,4 +17,6 @@ const producerGateway: Producer = kafka.producer();
 
 const consumerCloud: Consumer = kafka.consumer({ groupId: "cloud-group" });
 
-export { producerGateway, consumerCloud };
+//const producerMedia: Producer = kafka.producer();
+
+export { producerGateway, consumerCloud, /*producerMedia*/ };

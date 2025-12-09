@@ -7,7 +7,7 @@ const logger = createLogger("NODE_SENSOR");
 
 function gerarAmostraClimatica(regiaoMonitorada: string): AmostraClimatica {
   return {
-    regiao: regiaoMonitorada,
+    bairro: regiaoMonitorada,
     temperatura: (Math.random() * (35 - 18) + 18).toFixed(1),
     umidadeRelativa: (Math.random() * (90 - 30) + 30).toFixed(1),
     indiceInsolacao: (Math.random() * (1000 - 100) + 100).toFixed(1),
@@ -21,12 +21,12 @@ export function iniciarServidorSensor(config: ConfigSensor): void {
       {
         host: config.hostEscuta,
         porta: config.portaEscuta,
-        regiao: config.regiaoMonitorada,
+        regiao: config.bairroMonitorado,
       },
     );
 
     const temporizadorEnvio = setInterval(() => {
-      const leitura = gerarAmostraClimatica(config.regiaoMonitorada);
+      const leitura = gerarAmostraClimatica(config.bairroMonitorado);
       const payload = JSON.stringify(leitura) + "\n";
 
       conexaoGateway.write(payload);
@@ -48,7 +48,7 @@ export function iniciarServidorSensor(config: ConfigSensor): void {
     logger.info("Servidor de sensor iniciado", {
       host: config.hostEscuta,
       porta: config.portaEscuta,
-      regiao: config.regiaoMonitorada,
+      regiao: config.bairroMonitorado,
       intervaloMs: config.intervaloEnvioMs,
     });
   });
