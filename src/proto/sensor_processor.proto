@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package sensor_processor;
+
+service CalculoService {
+  rpc CalculaMedias (MediasRequestList) returns (MediasResponseList) {};
+}
+
+message Dado {
+  string bairro = 1;
+  string temperatura = 2;
+  string umidade = 3;
+  string insolacao = 4;
+}
+
+message MediasRequestList {
+  repeated Dado dados = 1;
+}
+
+message MediasResponse {
+  string bairro = 1;
+  double temperatura = 2;
+  double umidade = 3;
+  double insolacao = 4;
+}
+
+message MediasResponseList {
+  repeated MediasResponse medias = 1;
+}

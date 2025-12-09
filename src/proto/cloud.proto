@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package cloud_service;
+
+message Dado {
+  string bairro = 1;
+  string temperatura = 2;
+  string umidadeRelativa = 3;
+  string indiceInsolacao = 4;
+}
+
+message ListarLeiturasRequest {}
+
+message ListarLeiturasResponse {
+  repeated Dado dados = 1;
+}
+
+service CloudService {
+  rpc ListarLeituras (ListarLeiturasRequest) returns (ListarLeiturasResponse);
+}
