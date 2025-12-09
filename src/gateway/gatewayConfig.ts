@@ -12,6 +12,7 @@ export type ConfigGateway = {
 export function carregarConfigGateway(): ConfigGateway {
   const sensoresAlvos: PontoSensor[] = [
     { host: "0.0.0.0", porta: 5000 },
+    { host: "0.0.0.0", porta: 5001 },
   ];
 
   return {
