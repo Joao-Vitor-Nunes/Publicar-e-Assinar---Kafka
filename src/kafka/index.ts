@@ -1,4 +1,3 @@
-// kafkaConfig.ts
 import {
   Kafka,
   logLevel,
@@ -9,14 +8,12 @@ import {
 
 const kafkaConfig: KafkaConfig = {
   logLevel: logLevel.NOTHING,
-  brokers: ["localhost:9092"], // endereço do broker Kafka
+  brokers: ["localhost:9092"]
 };
 
 const kafka = new Kafka(kafkaConfig);
 
 const producerGateway: Producer = kafka.producer();
-
-// const producerGateway2: Producer = kafka.producer();
 
 const consumerCloud: Consumer = kafka.consumer({ groupId: "cloud-group" });
 

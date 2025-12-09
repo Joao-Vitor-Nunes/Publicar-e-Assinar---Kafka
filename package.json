@@ -4,10 +4,16 @@
     "description": "Desafio dos Sensores Urbanos - Sistemas Distribuídos",
     "main": "gateway.js",
     "scripts": {
-        "sensores": "npx ts-node sensor.ts Centro",
-        "gateway": "npx ts-node gateway.ts",
-        "cloud": "npx ts-node cloud.ts",
-        "processador": "npx ts-node processador.ts"
+        "sensor": "npx ts-node src/sensor/index.ts",
+        "sensor:bairro": "npx ts-node src/sensor/index.ts",
+        "gateway": "npx ts-node src/gateway/index.ts",
+        "cloud": "npx ts-node src/cloud/index.ts",
+        "processor": "npx ts-node src/processor/index.ts",
+        "build": "tsc",
+        "start:dist:gateway": "node dist/gateway/index.js",
+        "start:dist:cloud": "node dist/cloud/index.js",
+        "start:dist:sensor": "node dist/sensor/index.js",
+        "start:dist:processor": "node dist/processor/index.js"
     },
     "author": "Seu Nome",
     "license": "ISC",
